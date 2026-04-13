@@ -13,3 +13,4 @@ jobs:
           DEPLOY_ENV=$(echo "${{ github.event.pull_request.body }}" | grep "deploy_env:" | awk '{print $2}')
           echo "Deploy Env: $DEPLOY_ENV"
 
+
