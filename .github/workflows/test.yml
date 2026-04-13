@@ -6,6 +6,8 @@ on:
 jobs:
   build-1:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Display PR body
         id: parse_pr
