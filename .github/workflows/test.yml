@@ -10,5 +10,5 @@ jobs:
       - name: Display PR body
         run: |
           echo "PR Body: ${{ github.event.pull_request.body }} 2"
-          echo "Deploy Env: ${{ github.event.pull_request.body | grep deploy_env | awk '{print $2}' }}"
-         
+          DEPLOY_ENV=$(echo "${{ github.event.pull_request.body }}" | grep "deploy_env:" | awk '{print $2}')
+          echo "Deploy Env: $DEPLOY_ENV"
