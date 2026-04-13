@@ -16,14 +16,13 @@ jobs:
           echo "deploy_env=$DEPLOY_ENV" >> $GITHUB_OUTPUT
       - name: Comment on PR
         uses: actions/github-script@v7
+        env:
+          DEPLOY_ENV: ${{ steps.parse_pr.outputs.deploy_env }}
         with:
           script: |
-            const deployEnv = steps.parse_pr.outputs.deploy_env;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `Deploy Environment: ${deployEnv}`
+              body: `Deploy Environment: ${process.env.DEPLOY_ENV}`
             })
-        env:
-          DEPLOY_ENV: ${{ steps.parse_pr.outputs.deploy_env }}
