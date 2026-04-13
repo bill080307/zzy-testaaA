@@ -44,7 +44,13 @@ jobs:
   finally:
     runs-on: ubuntu-latest
     needs: [build-1, build-2, build-3]
-    if: (github.event.inputs.build1 == 'true' || github.event.inputs.build2 == 'true' || github.event.inputs.build3 == 'true') && success()
+    if: |
+      (github.event.inputs.build1 == 'true' || github.event.inputs.build2 == 'true' || github.event.inputs.build3 == 'true') &&
+      (
+        (github.event.inputs.build1 == 'true' && needs.build-1.result == 'success' || github.event.inputs.build1 == 'false') &&
+        (github.event.inputs.build2 == 'true' && needs.build-2.result == 'success' || github.event.inputs.build2 == 'false') &&
+        (github.event.inputs.build3 == 'true' && needs.build-3.result == 'success' || github.event.inputs.build3 == 'false')
+      )
     steps:
       - name: Display selected actions
         run: |
