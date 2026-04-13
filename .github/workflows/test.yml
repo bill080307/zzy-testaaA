@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Display selected actions
         run: |
-          echo "Build 2"
+          echo "Build 2${{ needs.build-1.result }}"
   build-3:
     runs-on: ubuntu-latest
     if: github.event.inputs.build3 == 'true'
