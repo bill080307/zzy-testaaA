@@ -10,6 +10,10 @@ jobs:
   build-1:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Display PR body
         id: parse_pr
         run: |
@@ -17,16 +21,23 @@ jobs:
           DEPLOY_ENV=$(echo "${{ github.event.pull_request.body }}" | grep "deploy_env:" | awk '{print $2}')
           echo "Deploy Env: $DEPLOY_ENV"
           echo "deploy_env=$DEPLOY_ENV" >> $GITHUB_OUTPUT
-      - name: Comment on PR
-        uses: actions/github-script@v7
-        env:
-          DEPLOY_ENV: ${{ steps.parse_pr.outputs.deploy_env }}
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Deploy Environment: ${process.env.DEPLOY_ENV}`
-            })
-
+      - name: Show file changes
+        run: |
+          echo "File changes in this PR:"
+          git diff HEAD^ HEAD
+          echo "\nFiles changed:"
+          git diff --name-only HEAD^ HEAD
+          echo "\nFile status:"
+          git status
+      # - name: Comment on PR
+      #   uses: actions/github-script@v7
+      #   env:
+      #     DEPLOY_ENV: ${{ steps.parse_pr.outputs.deploy_env }}
+      #   with:
+      #     script: |
+      #       github.rest.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: `Deploy Environment: ${process.env.DEPLOY_ENV}`
+      #       })
