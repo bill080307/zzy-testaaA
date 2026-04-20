@@ -10,6 +10,8 @@ jobs:
       - name: Show file changes
         run: |
           df -h
-          du -hd 2 /
+          du -hd 2 /usr/local
+          du -hd 2 /usr/share
+          du -hd 2 /opt/hostedtoolcache
           df -h
           echo "Hello, World!"
