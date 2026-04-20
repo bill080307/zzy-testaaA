@@ -1,0 +1,15 @@
+name: Test 222
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show file changes
+        run: |
+          df -h
+          du -hd 2 /
+          df -h
+          echo "Hello, World!"
