@@ -21,4 +21,4 @@ jobs:
           # 在这里添加销毁环境的命令
           # 例如: terraform destroy -auto-approve
           # 或者: kubectl delete namespace my-app-${{ github.event.pull_request.number }}
-          echo "Environment destroyed successfully"
+          echo "Environment destroyed successfully1"
