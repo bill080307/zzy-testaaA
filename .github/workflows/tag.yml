@@ -1,8 +1,7 @@
 name: Tag Action
 
 on:
-  create:
-    ref_type: tag
+  push:
     tags:
       - 'v*'
 
