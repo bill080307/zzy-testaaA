@@ -1,0 +1,57 @@
+name: Tag Action
+
+on:
+  create:
+    ref_type: tag
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get tag info
+        run: |
+          echo "Tag created: ${{ github.ref_name }}"
+          echo "Tag type: ${{ github.event.ref_type }}"
+          echo "Creator: ${{ github.actor }}"
+
+      - name: Get previous tag
+        id: get_previous_tag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "Previous tag: $PREV_TAG"
+          echo "previous_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+
+      - name: Compare tags
+        run: |
+          PREV_TAG="${{ steps.get_previous_tag.outputs.previous_tag }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+          
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous tag found, showing all files in current tag:"
+            git ls-tree -r --name-only HEAD
+          else
+            echo "Comparing $PREV_TAG -> $CURRENT_TAG"
+            echo "--- Files changed ---"
+            git diff --name-only $PREV_TAG $CURRENT_TAG
+            echo ""
+            echo "--- Files added ---"
+            git diff --name-only --diff-filter=A $PREV_TAG $CURRENT_TAG
+            echo ""
+            echo "--- Files modified ---"
+            git diff --name-only --diff-filter=M $PREV_TAG $CURRENT_TAG
+            echo ""
+            echo "--- Files deleted ---"
+            git diff --name-only --diff-filter=D $PREV_TAG $CURRENT_TAG
+          fi
+
+      - name: Display repository info
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Repository owner: ${{ github.repository_owner }}"
