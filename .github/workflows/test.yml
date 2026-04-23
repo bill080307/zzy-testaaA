@@ -2,7 +2,10 @@ name: Test Action
 
 on:
   pull_request:
-
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 permissions:
   pull-requests: write
 
@@ -14,6 +17,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: get deploy_env
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Triggered by: ${{ github.event.pull_request.user.login }} (PR #${{ github.event.pull_request.number }})"
+            echo "Event: pull_request"
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            echo "Triggered by: ${{ github.event.pusher.name }} (Email: ${{ github.event.pusher.email }})"
+            echo "Event: push"
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Triggered by: ${{ github.actor }} (Manual trigger)"
+            echo "Event: workflow_dispatch"
+          fi
       - name: Display PR body
         id: parse_pr
         run: |
