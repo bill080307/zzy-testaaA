@@ -9,6 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Get tag info
         run: |
           echo "Tag created: ${{ github.ref_name }}"
@@ -18,8 +23,23 @@ jobs:
       - name: Get previous tag
         id: get_previous_tag
         run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          echo "Previous tag: $PREV_TAG"
+          CURRENT_TAG="${{ github.ref_name }}"
+          ALL_V_TAGS=$(git tag -l 'v*' --sort=-v:refname)
+          PREV_TAG=""
+          FOUND_CURRENT=false
+          
+          for tag in $ALL_V_TAGS; do
+            if [ "$FOUND_CURRENT" = true ]; then
+              PREV_TAG=$tag
+              break
+            fi
+            if [ "$tag" = "$CURRENT_TAG" ]; then
+              FOUND_CURRENT=true
+            fi
+          done
+          
+          echo "Current tag: $CURRENT_TAG"
+          echo "Previous v tag: $PREV_TAG"
           echo "previous_tag=$PREV_TAG" >> $GITHUB_OUTPUT
 
       - name: Compare tags
